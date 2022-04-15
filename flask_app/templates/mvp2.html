@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon" href="https://via.placeholder.com/70x70">
+    <link rel="stylesheet" href="{{ url_for('static', filename='mvp.css') }}">
+
+    <meta charset="utf-8">
+    <meta name="description" content="My description">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My title</title>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href="/"><img alt="Logo" src="https://via.placeholder.com/200x70?text=Logo" height="70"></a>
+            <ul>
+                <li><a href="#"> Home</a></li>
+                <li><a href="#">About</a></li>
+
+            </ul>
+        </nav>
+        <h3>Page Heading</h3>
+    </header>
+
+
+    <section>
+
+
+
+        <aside>
+            <h4>The sentiment was: </h4>
+            <p style="color:rgb(37, 236, 11);"> {{ pos_sent}} % positive 😀</p>
+            <p style="color:Tomato;"> {{neg_sent}}% Negative 😠</p>
+
+        </aside>
+        <aside>
+            <h4> 💹 The FTSE100 was:</h4>
+            <p style="color:rgb(37, 236, 11);"> +0.58% </p>
+            <p style="color:Tomato;"> -0.23% </p>
+
+
+        </aside>
+        <form class="form-inline" method="POST" action="{{ url_for('test') }}">
+            <label for="select1">Time Period:</label>
+            <select id="select1" name="comp_select" >
+                <option value="1 day">1 day</option>
+                <option value="1 week">1 week</option>
+                <option value="1 month">1 month</option>
+                <option value="1 year">1 year</option>
+            </select>
+            <button type="submit" class="btn btn-default">Go</button>
+        </form>
+        <article>
+
+
+
+            <h5>
+                What is this?
+            </h5>
+
+            <p>
+                This page compares the sentiment for uk subressits and compares it to the FTSE100
+            </p>
+        </article>
+
+    </section>
+</body>
