@@ -129,3 +129,5 @@ dmypy.json
 .pyre/
 
 praw.ini
+hosts
+pass.yml

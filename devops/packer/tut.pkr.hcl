@@ -8,7 +8,7 @@ packer {
 }
 
 source "amazon-ebs" "ubuntu" {
-  ami_name      = "learn-packer-linux-aws"
+  ami_name      = "shantnu-sentiduck-image"
   instance_type = "t2.micro"
   region        = "us-east-1"
   source_ami_filter {
@@ -24,12 +24,12 @@ source "amazon-ebs" "ubuntu" {
 }
 
 build {
-  name = "learn-packer"
+  name = "shantnu-sentiduck-image"
   sources = [
     "source.amazon-ebs.ubuntu"
   ]
 
-  provisioner "shell" {
-    script = "./config.sh"
+  provisioner "ansible" {
+    script = ".../ansible/main.yml"
   }
 }

@@ -1,0 +1,121 @@
+---
+- hosts: webservers
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: Update and upgrade apt packages
+    become: true
+    apt:
+      upgrade: yes
+      update_cache: yes
+
+  - name: install packages
+    apt: name={{item}} state=present
+    with_items:
+      - python3-pip
+      - python3-dev
+      - nginx
+      - python3.8-venv
+      - unzip
+
+# Install the app, note: don't do these tasks with become sudo
+- hosts: webservers
+  tasks:
+  - name: clone repo
+    git:
+      repo: 'https://github.com/shantnu/sentiment-duck.git'
+      dest: /home/ubuntu/sentiduck
+      update: yes  # Does a git pull if the repo already exists
+  - name: install modules in a virtualenv
+    pip:
+      requirements: /home/ubuntu/sentiduck/requirements.txt
+      virtualenv: /home/ubuntu/sentiduck/env
+      virtualenv_command: 'python3 -m venv'
+
+- hosts: webservers
+  tasks:
+  - name: Install NLTK Data
+    shell: "/home/ubuntu/sentiduck/env/bin/python -m nltk.downloader vader_lexicon"
+
+# Configure app systemd service and nginx
+- hosts: webservers
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: template systemd service config
+    copy:
+      src: .service
+      dest: /etc/systemd/system/sentiduck.service
+  - name: start systemd app service
+    systemd: name=sentiduck.service state=restarted enabled=yes
+  - name: template nginx site config
+    template:
+      src: .nginx
+      dest: /etc/nginx/sites-available/sentiduck
+  - name: remove default nginx site config
+    file: path=/etc/nginx/sites-enabled/default state=absent
+
+  - name: enable nginx site
+    file:
+      src: /etc/nginx/sites-available/sentiduck
+      dest: /etc/nginx/sites-enabled/default
+      state: link
+      force: yes
+  - name: restart nginx
+    systemd: name=nginx state=restarted enabled=yes
+  - name: open firewall for nginx
+    ufw:
+      rule: allow
+      name: Nginx Full
+
+# install aws cli
+- hosts: webservers
+  vars_files:
+      - vars/pass.yml
+  tasks:
+  - name: Download the awscli bundle.
+    get_url: url=https://s3.amazonaws.com/aws-cli/awscli-bundle.zip dest=/tmp/awscli-bundle.zip
+    register: aws_cli_download_bundle
+
+  - name: Unarchive the installer.
+    unarchive: src=/tmp/awscli-bundle.zip dest=/tmp copy=no creates=/tmp/awscli-bundle
+    register: aws_cli_unarchive_installer
+
+  - name: Install awscli package.
+    shell: sudo python3 /tmp/awscli-bundle/install -i /usr/local/aws -b /usr/bin/aws
+    args:
+      creates: /usr/bin/aws
+
+  - name: Configure AWS.
+    shell: aws configure set {{ item.key }} {{ item.value }} --profile {{ aws_profile }}
+    no_log: True
+    with_dict:
+      region: "{{ aws_region }}"
+      aws_access_key_id: "{{ aws_access_key_id }}"
+      aws_secret_access_key: "{{ aws_secret_access_key }}"
+      format: "{{ aws_format }}"
+
+
+# Copy praw file
+- hosts: webservers
+
+  tasks:
+
+  - name: Copy praw file
+    copy:
+      src: ./praw.ini
+      dest: /home/ubuntu/sentiduck/praw.ini
+
+# # # Run a quick test to verify the site is working
+# - hosts: webservers
+#   tasks:
+#   - name: get url
+#     get_url:
+#       url: http://{{inventory_hostname}}
+#       dest: /tmp/index.html
+#   - name: read html
+#     shell: cat /tmp/index.html
+#     register: html_contents
+#   - name: check for string in html
+#     when: html_contents.stdout.find('hello') != -1
+#     debug: msg="success!"
