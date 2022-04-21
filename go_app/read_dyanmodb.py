@@ -1,3 +1,4 @@
+#!../env/bin/python
 from pynamodb.models import Model
 from pynamodb.attributes import UnicodeAttribute,UTCDateTimeAttribute,NumberAttribute
 import datetime
