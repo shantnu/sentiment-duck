@@ -37,36 +37,14 @@
   - name: Install NLTK Data
     shell: "/home/ubuntu/sentiduck/env/bin/python -m nltk.downloader vader_lexicon"
 
-# Configure app systemd service and nginx
+# Install caddy
 - hosts: webservers
   become: yes
   become_method: sudo
   tasks:
-  - name: template systemd service config
-    copy:
-      src: .service
-      dest: /etc/systemd/system/sentiduck.service
-  - name: start systemd app service
-    systemd: name=sentiduck.service state=restarted enabled=yes
-  - name: template nginx site config
-    template:
-      src: .nginx
-      dest: /etc/nginx/sites-available/sentiduck
-  - name: remove default nginx site config
-    file: path=/etc/nginx/sites-enabled/default state=absent
+    - name: Installing caddy
+    - ansible.builtin.script: ./install_caddy.sh
 
-  - name: enable nginx site
-    file:
-      src: /etc/nginx/sites-available/sentiduck
-      dest: /etc/nginx/sites-enabled/default
-      state: link
-      force: yes
-  - name: restart nginx
-    systemd: name=nginx state=restarted enabled=yes
-  - name: open firewall for nginx
-    ufw:
-      rule: allow
-      name: Nginx Full
 
 # install aws cli
 - hosts: webservers
