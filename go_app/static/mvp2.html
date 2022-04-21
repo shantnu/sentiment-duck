@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- <link rel="icon" href="https://via.placeholder.com/70x70"> -->
+    <link rel="stylesheet" href="/static/mvp.css">
+
+    <meta charset="utf-8">
+    <meta name="description" content="My description">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sentiment Duck (quack quack)</title>
+</head>
+
+<body>
+    <header style=" padding-bottom: 0">
+        <nav style="margin-bottom: 1px;">
+            <!-- <a href="/"><img alt="Logo" src="/static/duck.png" height="70"></a> -->
+            <ul>
+                <li><a href="#"> Home</a></li>
+                <li><a href="#">About</a></li>
+
+            </ul>
+        </nav>
+        <!-- <h3>Page Heading</h3> -->
+    </header>
+
+
+    <h5 style="text-align: center">  Comparing UK Reddit sentiment with FTSE100 Share Price For: {{ .Time_period}} </h5>
+
+
+    <section>
+
+        <aside>
+            <h4>The sentiment was: </h4>
+            <p style="color:rgb(37, 236, 11);"> {{ .Positive_sent}} % positive 😀</p>
+            <p style="color:Tomato;"> {{ .Negative_sent}}% Negative 😠</p>
+
+        </aside>
+        <aside>
+            <h4> 💹 The FTSE100 was:</h4>
+            <p style="color: {{ .Stock_colour }};"> {{.Stock_Text}}{{.Share_percent }}% </p>
+
+
+        </aside>
+        <form class="form-inline" method="POST" action="/test" >
+            <label for="select1">Time Period:</label>
+            <select id="select1" name="comp_select" >
+                <option value="1 day">1 day</option>
+                <option value="1 week">1 week</option>
+                <option value="1 month">1 month</option>
+                <option value="1 year">1 year</option>
+            </select>
+            <button type="submit" class="btn btn-default">Go</button>
+        </form>
+        <article>
+
+
+
+            <h5>
+                What is this page?
+            </h5>
+
+            <p>
+                This page compares the sentiment for UK subreddits and compares it to the FTSE100.
+            </p>
+            <p> It checks if the Reddit sentiment is co-related to the Ftse stock price</p>
+
+            <h5>
+                What does sentiment mean?
+            </h5>
+
+            <p>
+                It checks if the feeling/opinion of a piece of text is positive, negative or neutral (using machine learning)
+            </p>
+
+            <h5>
+               Where are you getting the data for Sentiment for?
+            </h5>
+
+            <p>
+                I'm reading/scraping 3 subreddits-- AskUk, UnitedKingdom and UkPolitics. </p>
+
+          <p>I chose these because they are the biggest in the UK, having roughly 3.5 million subscribers (in total) </p>
+            <p>while still having a balance of positive/negative views. </p>
+
+            <h5> How did you build this website?</h5>
+            <p> See this  for details/ @TODO Add link</p>
+
+
+            <h5>
+                How accurate is Sentiment analysis?
+            </h5>
+
+            <p>
+                It depends (on too many factors to go thru here)! See details here @todo
+            </p>
+
+            <p> <strong>Legal:</strong> Nothing on this site is financial advice. Please don't buy shares based on what Reddit is thinking! 😺</p>
+
+        </article>
+
+    </section>
+</body>
