@@ -14,7 +14,6 @@
     with_items:
       - python3-pip
       - python3-dev
-      - nginx
       - python3.8-venv
       - unzip
       - golang-go
