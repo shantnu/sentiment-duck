@@ -19,7 +19,8 @@ class SentiModel(Model):
     stock_change_percent = NumberAttribute(default=0.0)
 
 def read_dynamodb_data(days):
-    os.remove("dynamodata.json")
+    if os.path.exists("dynamodata.json"):
+        os.remove("dynamodata.json")
     date_filter = datetime.date.today() - timedelta(days = days)
     print("shantnu debug date_filter=",date_filter)
 
