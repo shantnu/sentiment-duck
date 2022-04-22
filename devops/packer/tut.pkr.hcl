@@ -30,6 +30,6 @@ build {
   ]
 
   provisioner "ansible" {
-    script = ".../ansible/main.yml"
+    playbook_file = "../ansible/main.yml"
   }
 }

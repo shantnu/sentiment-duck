@@ -17,6 +17,7 @@
       - nginx
       - python3.8-venv
       - unzip
+      - golang-go
 
 # Install the app, note: don't do these tasks with become sudo
 - hosts: webservers
@@ -42,7 +43,6 @@
   become: yes
   become_method: sudo
   tasks:
-    - name: Installing caddy
     - ansible.builtin.script: ./install_caddy.sh
 
 
@@ -83,6 +83,14 @@
     copy:
       src: ./praw.ini
       dest: /home/ubuntu/sentiduck/praw.ini
+
+- hosts: webservers
+  tasks:
+  - cron:
+      name: "cron to update dynamodb"
+      minute: "0"
+      hour: "23"
+      job: "cd /home/ubuntu/sentiduck; /home/ubuntu/sentiduck/env/bin/python main.py"
 
 # # # Run a quick test to verify the site is working
 # - hosts: webservers
