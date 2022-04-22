@@ -23,6 +23,8 @@ resource "aws_instance" "app_server" {
   ami           = var.aws_ami_name
   instance_type = "t2.micro"
   key_name      = "ec2"
+  vpc_security_group_ids = ["${aws_security_group.sent-duck-sg-allow-http-ssh.id}"]
+
   tags = {
     Name = var.instance_name
   }
@@ -39,6 +41,7 @@ resource "aws_security_group" "sent-duck-sg-allow-http-ssh" {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
 
   }
 
