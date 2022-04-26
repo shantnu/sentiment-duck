@@ -14,7 +14,7 @@ def get_finance_data():
     print("Today = Yesterday was: ", date_today, yesterday)
 
     # Get the data for the stock AAPL
-    data = yf.download('^FTSE','2022-04-14','2022-04-15')
+    data = yf.download('^FTSE',yesterday,date_today)
 
     diff = data['Adj Close'][0] - data['Open'][0]
 
@@ -23,3 +23,6 @@ def get_finance_data():
     print(f"FTSE change = {diff} percent = {change_percent}")
 
     return change_percent
+
+if __name__ == '__main__':
+    get_finance_data()
