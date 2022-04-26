@@ -5,3 +5,7 @@ sudo apt update
 sudo apt install caddy
 
 sudo setcap CAP_NET_BIND_SERVICE=+eip $(which caddy)
+
+caddy stop
+cd /home/ubuntu/sentiduck/devops/ansible
+caddy start

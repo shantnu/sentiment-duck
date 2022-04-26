@@ -86,21 +86,31 @@
 - hosts: webservers
   tasks:
   - cron:
-      name: "cron to update dynamodb"
+      name: cron to update dynamodb
       minute: "0"
       hour: "23"
       job: "cd /home/ubuntu/sentiduck; /home/ubuntu/sentiduck/env/bin/python main.py"
 
-# # # Run a quick test to verify the site is working
-# - hosts: webservers
-#   tasks:
-#   - name: get url
-#     get_url:
-#       url: http://{{inventory_hostname}}
-#       dest: /tmp/index.html
-#   - name: read html
-#     shell: cat /tmp/index.html
-#     register: html_contents
-#   - name: check for string in html
-#     when: html_contents.stdout.find('hello') != -1
-#     debug: msg="success!"
+# Configure app systemd service
+- hosts: webservers
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: Build go code
+    shell: cd /home/ubuntu/sentiduck/go_app; go build -o senti_server
+  - name: template systemd service config
+    copy:
+      src: .service
+      dest: /etc/systemd/system/sentiduck.service
+  - name: start systemd app service
+    systemd: name=sentiduck.service state=restarted enabled=yes
+
+# # Run a quick test to verify the site is working
+- hosts: webservers
+  tasks:
+  - name: Check that a page returns a status 200
+    uri:
+      url: https://sentimentduck.com/
+      return_content: yes
+    register: this
+    failed_when: "'Comparing UK Reddit' not in this.content"
