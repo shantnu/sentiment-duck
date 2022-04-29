@@ -52,7 +52,7 @@ def read_dynamodb_data(days):
 
 
     with open("dynamodata.json", 'w') as file:
-	    dump(output, file)
+        dump(output, file)
     return positive_counter, negative_counter, stock_counter
 if __name__ == "__main__":
     days = int(sys.argv[1])

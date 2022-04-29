@@ -185,3 +185,5 @@ crash.log
 *.box
 
 dynamodata.json
+lambda.zip
+nltk_data/
