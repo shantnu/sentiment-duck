@@ -38,6 +38,8 @@ jobs:
         run: |
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
-          uname -a && 
+          sudo systemctl stop sentiduck &&
           cd /home/ubuntu/sentiduck && git reset --hard origin/main &&
-            git pull origin main '
+            git pull origin main  &&
+            cd /home/ubuntu/sentiduck/go_app && go build -o senti_server
+            sudo systemctl start sentiduck'
