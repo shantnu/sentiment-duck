@@ -24,17 +24,17 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-      - name: deploy to ec2
-        env:
-            PRIVATE_KEY: ${{ secrets.AWS_SSH_KEY  }}
-            HOSTNAME : ${{ secrets.AWS_IP  }}
-            USER_NAME : ${{ secrets.AWS_USERNAME  }}
+
       # Runs a single command using the runners shell
       - name: Run a one-line script
         run: echo Hello, world!
 
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
+        env:
+            PRIVATE_KEY: ${{ secrets.AWS_SSH_KEY  }}
+            HOSTNAME : ${{ secrets.AWS_IP  }}
+            USER_NAME : ${{ secrets.AWS_USERNAME  }}
         run: |
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
