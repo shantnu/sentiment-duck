@@ -49,10 +49,12 @@ def read_dynamodb_data(days):
     stock_counter = stock_counter / counter #yeah, not perfect but im lazy :/
     stock_counter = float("{:.2f}".format(stock_counter))
     print("after : ",positive_counter, negative_counter, stock_counter, counter)
-
+    total = positive_counter + negative_counter
+    pos_percent = int(positive_counter/total * 100)
+    neg_percent = int(negative_counter/total * 100)
     output = {
-        "positive_counter":positive_counter,
-        "negative_counter": negative_counter,
+        "positive_counter":pos_percent,
+        "negative_counter": neg_percent,
         "stock_counter":stock_counter
 
     }
