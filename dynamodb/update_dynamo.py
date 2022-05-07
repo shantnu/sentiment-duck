@@ -2,6 +2,7 @@ from pynamodb.models import Model
 from pynamodb.attributes import UnicodeAttribute,UTCDateTimeAttribute,NumberAttribute
 import datetime
 from datetime import timedelta
+import sys
 
 class SentiModel(Model):
     """
@@ -32,6 +33,7 @@ def read_dynamodb_data(days):
     for item in SentiModel.scan():
         counter += 1
         print("Item queried from index: {0}".format(item))
+        print("read item = ", item.sentiment_positive, item.sentiment_negative)
         positive_counter += item.sentiment_positive
         negative_counter += item.sentiment_negative
         if item.date_data.date() < date_filter:
@@ -43,7 +45,7 @@ def read_dynamodb_data(days):
     return positive_counter, negative_counter
 if __name__ == "__main__":
     #update_dynamodb(datetime.datetime.now(), 22,55,-7.5 )
-    positive_counter, negative_counter = read_dynamodb_data()
+    positive_counter, negative_counter = read_dynamodb_data(int(sys.argv[1]))
     total = positive_counter + negative_counter
     pos_percent = int(positive_counter/total * 100)
     neg_percent = int(negative_counter/total * 100)
