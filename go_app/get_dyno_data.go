@@ -20,6 +20,10 @@ func get_dyno_data(days string) (int, int, float32) {
 		Stock_counter    float32
 	}
 
+	logFile := setLogfile("get-dyno-go.log")
+	log.SetOutput(logFile)
+	log.Println("get dyno log file created")
+
 	cmd := exec.Command("./read_dyanmodb.py", days)
 	if err := cmd.Run(); err != nil {
 		log.Fatal(err)

@@ -7,3 +7,4 @@ User=ubuntu
 WorkingDirectory=/home/ubuntu/sentiduck/go_app
 Environment="PATH=/home/ubuntu/sentiduck/env/bin"
 ExecStart=/home/ubuntu/sentiduck/go_app/senti_server
+Restart=always

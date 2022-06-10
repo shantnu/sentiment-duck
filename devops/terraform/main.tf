@@ -21,7 +21,7 @@ provider "aws" {
 
 resource "aws_instance" "app_server" {
   ami           = var.aws_ami_name
-  instance_type = "t2.micro"
+  instance_type = "t3.nano"
   key_name      = "ec2"
   vpc_security_group_ids = ["${aws_security_group.sent-duck-sg-allow-http-ssh.id}"]
 

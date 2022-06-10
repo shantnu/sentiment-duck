@@ -5,6 +5,9 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"os"
+	"os/user"
+	"path/filepath"
 )
 
 type Sentidata struct {
@@ -84,7 +87,30 @@ func initSentData() {
 
 }
 
+func setLogfile(name string) *os.File {
+	user, err := user.Current()
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+	homeDirectory := user.HomeDir
+	fmt.Printf("Home Directory: %s\n", homeDirectory)
+
+	path := filepath.Join(homeDirectory, name)
+	logFile, err := os.OpenFile(path, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return logFile
+}
+
 func main() {
+	logFile := setLogfile("main-go.log")
+	log.SetOutput(logFile)
+	log.SetFlags(log.LstdFlags | log.Lshortfile | log.Lmicroseconds)
+
+	log.Println("log file created")
+
 	initSentData()
 	fmt.Println("Running on localhost 8080....")
 	http.HandleFunc("/test", testHandler)
