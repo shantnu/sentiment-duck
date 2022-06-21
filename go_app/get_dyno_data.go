@@ -26,7 +26,8 @@ func get_dyno_data(days string) (int, int, float32) {
 
 	cmd := exec.Command("./read_dyanmodb.py", days)
 	if err := cmd.Run(); err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return 0, 0, 0
 	}
 
 	// read file
