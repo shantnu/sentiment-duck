@@ -1,55 +1,58 @@
-import praw
-from nltk.sentiment.vader import SentimentIntensityAnalyzer
-analyzer = SentimentIntensityAnalyzer()
+import json
+import boto3
+import requests
+from bs4 import BeautifulSoup
+import re
+import datetime
 
 
-def lambda_handler():
-    reddit = praw.Reddit('bot1')
-    subs = ["unitedkingdom", "ukpolitics", "AskUK"]
-    #subreddit = reddit.subreddit("unitedkingdom")
-    #subreddit = reddit.subreddit("UKPersonalFinance")
-    #subreddit = reddit.subreddit("ukpolitics")
+def lambda_handler(event, context):
+    ses = boto3.client("ses")
+    sns = boto3.client('sns')
+    source = "http://sentimentduck.com"
+
+    r = requests.get(source)
+    # body = {
+    #     "message": r,
+    #     "input": event,
+    # }
+
+    soup = BeautifulSoup(r.text)
+
+    # print(soup)
+
+    full_text = ""
+
+    for pp in soup.body.find_all("p"):
+        full_text += pp.text
+    line = full_text.split("\r\n")[0]
+    pos = re.findall("([\d]*) % positive", line)[0]
+    neg = re.findall("([\d]*)% Neg", line)[0]
+    stock = re.findall("😠 [\w]* ([+-.\d]*)", line)[0]
+
+    print(pos, neg, stock)
+
+    datenow=datetime.datetime.now().date().strftime("%B-%d-%Y")
+    email_data =  f" Sentiment data: \n Positive= {pos}\n Negative = {neg} \n stock = {stock}\n"
+    subject ="Sentiment data update: " + datenow
+    print(email_data)
+
+    ses.send_email(
+        Source="shantnu@shantnutiwari.com",
+        Destination={"ToAddresses": ["shantnu@shantnutiwari.com"]},
+        Message={
+            "Subject": {"Data": subject},
+            "Body": {"Text":  {'Data': email_data}},
+        },
+    )
+    day =  datetime.datetime.now().weekday()
+
+    if day == 6: #only on Sundays
+        number = '+447792766186'
+        sns.publish(PhoneNumber = number, Message=email_data)
+    return True
 
 
-    final_pos = 0
-    final_neg = 0
-    for s in subs:
-        print(f'In subreddit {s}')
-        subreddit = reddit.subreddit(s)
+if __name__ == "__main__":
+    hello("d", "")
 
-        top_posts = subreddit.hot(limit=10)
-        import pdb;
-        positive_score=0
-        negative_score=0
-        for post in top_posts:
-            #print(post.title, post.score)
-            if post.stickied:
-                continue # jump over annoucements
-            #print("\n --------")
-
-
-            score = 0.0
-
-            post.comments.replace_more(limit=None)
-
-            for comment in post.comments.list():
-
-                if comment.score >= 1:
-                    sentiment_score= analyzer.polarity_scores(comment.body)
-                    score += sentiment_score['compound']
-
-                    #print(comment.body, sentiment_score)
-
-            #print(f"At end: for {post.title},  score = {score} ")
-            if score > 0:
-                positive_score +=1
-            else:
-                negative_score += 1
-
-        print(f" For subreddit {s} Final positive = {positive_score} negative = {negative_score}")
-        final_pos += positive_score
-        final_neg += negative_score
-
-    print(f"At the end: {final_pos} {final_neg}")
-
-    return final_pos, final_neg
